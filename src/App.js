@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { ActionCable } from 'react-actioncable-provider';
+import UserPanel from './UserPanel';
 import './App.css';
 
 
@@ -55,10 +56,15 @@ class App extends Component {
             onReceived={this.handleReceived}
           />
 
-          { this.state.isAuthenticated ? 'Olá,' + this.state.user.email : '' }
+          { this.state.isAuthenticated ? <UserPanel user={this.state.user} /> : null }
 
-          <button className={this.state.isAuthenticated ? 'hidden' : ''} onClick={this.startAuth}>Login</button>
-          <button className={!this.state.isAuthenticated ? 'hidden' : ''} onClick={this.startLogout}>Logout</button>
+          <button
+            className={this.state.isAuthenticated ? 'hidden' : ''}
+            onClick={this.startAuth}>Login</button>
+
+          <button
+            className={!this.state.isAuthenticated ? 'hidden' : ''}
+            onClick={this.startLogout}>Logout</button>
        </div>
      </div>
     );
