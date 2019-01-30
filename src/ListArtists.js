@@ -8,11 +8,11 @@ class ListArtists extends Component {
   render() {
     const { artists } = this.props;
     var namesList = artists.map(function(a){
-      return <li>{a.name}</li>;
+      return <li className="list-group-item">{a.name}</li>;
     })
 
     return (
-      <ul>{ namesList }</ul>
+      <ul className="list-group">{ namesList }</ul>
     )
   }
 }

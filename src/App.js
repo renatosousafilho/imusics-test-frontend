@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+
 import { ActionCable } from 'react-actioncable-provider';
-import { OauthSender, OauthReceiver } from 'react-oauth-flow';
+import OAuthAuthenticator from './OAuthAuthenticator';
 import UserPanel from './UserPanel';
 import ListArtists from './ListArtists';
-import { get } from './network'
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 class App extends Component {
@@ -49,23 +50,9 @@ class App extends Component {
     this.setState({user, isAuthenticated: true})
   }
 
-  handleSuccess = async (accessToken, { response, state }) => {
-    console.log('Successfully authorized');
-    let opts = { headers: {"Authorization": `Bearer ${accessToken}`}}
-    get("/api/v1/following", opts).then(
-      (response) => {
-        console.log(response.artists.length)
-        this.setState({artists: response.artists})
-      }
-    )
-  };
-
-  handleError = error => {
-    console.error('An error occured');
-    console.error(error.message);
-  };
-
-
+  onAuthSuccess = response => {
+    this.setState({artists: response.artists, isAuthenticated: true})
+  }
 
   render() {
     return (
@@ -76,43 +63,19 @@ class App extends Component {
             onReceived={this.handleReceived}
           />
 
-          <OauthSender
-            authorizeUrl="http://localhost:5000/oauth/authorize"
-            clientId="817ffd5bf665a8e7b3b849cb8c8993f0f97899ee234daecf0358255e2e647b76"
-            redirectUri="http://localhost:3000/auth/doorkeeper/callback"
-            render={({ url }) => <a href={url}>Login</a>}
-          />
+          <button
+            className={this.state.isAuthenticated ? 'hidden' : 'btn btn-success'}
+            onClick={this.startAuth}>Login with Spotify</button>
 
-          <OauthReceiver
-            tokenUrl="http://localhost:5000/oauth/token"
-            clientId="817ffd5bf665a8e7b3b849cb8c8993f0f97899ee234daecf0358255e2e647b76"
-            clientSecret="a4b724042d2b064dada6aef357541ce32b47acc30af70dd7a1cea0971c657eb4"
-            redirectUri="http://localhost:3000/auth/doorkeeper/callback"
-            onAuthSuccess={this.handleSuccess}
-            onAuthError={this.handleError}
-            render={({ processing, state, error }) => (
-              <div>
-                {processing && <p>Authorizing now...</p>}
-                {error && (
-                  <p className="error">An error occured: {error.message}</p>
-                )}
-              </div>
-            )}
-          />
-
-          { this.state.artists.length > 0 ? this.state.artists.map(function(a){
-                        return <li>{a.name}</li>;
-                      }) : null }
-
-          { this.state.artists.length > 0 ? <ListArtists artists={this.state.artists} /> : null }
+          <OAuthAuthenticator onAuthSuccess={this.onAuthSuccess}/>
 
           <button
-            className={this.state.isAuthenticated ? 'hidden' : ''}
-            onClick={this.startAuth}>Login</button>
+              className={!this.state.isAuthenticated ? 'hidden' : 'btn btn-danger'}
+              onClick={this.startLogout}>Logout</button>
 
-          <button
-            className={!this.state.isAuthenticated ? 'hidden' : ''}
-            onClick={this.startLogout}>Logout</button>
+          <div>
+            { this.state.artists.length > 0 ? <ListArtists artists={this.state.artists} /> : null }
+          </div>
        </div>
      </div>
     );
