@@ -6,7 +6,7 @@ import './App.css';
 class App extends Component {
   state = {
     user: {},
-    disabled: ''
+    isAuthenticated: false
   }
 
   constructor() {
@@ -15,22 +15,15 @@ class App extends Component {
   }
 
   startAuth = () => {
-    if (!this.state.disabled) {
+    if (!this.state.isAuthenticated) {
       this.popup = this.openPopup()
-      this.checkPopup()
-      this.setState({disabled: 'disabled'})
     }
   }
 
-  checkPopup() {
-    const check = setInterval(() => {
-      const { popup } = this
-      if (!popup || popup.closed || popup.closed === undefined) {
-        clearInterval(check)
-        this.setState({ disabled: ''})
-      }
-    }, 1000)
+  startLogout = () => {
+    this.setState({user: {}, isAuthenticated: false})
   }
+
 
   openPopup() {
     const width = 600, height = 600
@@ -48,7 +41,8 @@ class App extends Component {
   handleReceived(data) {
     this.popup.close()
     let user = JSON.parse(data.user)
-    this.setState({user})
+    this.setState({user, isAuthenticated: true})
+    console.log(this.state)
   }
 
 
@@ -61,9 +55,10 @@ class App extends Component {
             onReceived={this.handleReceived}
           />
 
-          { this.state.user.email ? 'Olá,' + this.state.user.email : '' }
+          { this.state.isAuthenticated ? 'Olá,' + this.state.user.email : '' }
 
-          <button onClick={this.startAuth}>Login</button>
+          <button className={this.state.isAuthenticated ? 'hidden' : ''} onClick={this.startAuth}>Login</button>
+          <button className={!this.state.isAuthenticated ? 'hidden' : ''} onClick={this.startLogout}>Logout</button>
        </div>
      </div>
     );
