@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+
+import { userUpdated, logout } from './oauthActions';
 
 import { ActionCable } from 'react-actioncable-provider';
 import LoadingSpinner from './LoadingSpinner'
 import OAuthAuthenticator from './OAuthAuthenticator';
 import UserPanel from './UserPanel';
 import ListArtists from './ListArtists';
+
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -29,11 +34,6 @@ class App extends Component {
     }
   }
 
-  startLogout = () => {
-    this.setState({user: {}, isAuthenticated: false})
-  }
-
-
   openPopup() {
     const width = 600, height = 600
     const left = (window.innerWidth / 2) - (width / 2)
@@ -50,22 +50,12 @@ class App extends Component {
   handleReceived(data) {
     this.popup.close()
     let user = JSON.parse(data.user)
-    this.setState({user, isAuthenticated: true})
-  }
-
-  onAuthSuccess = response => {
-    this.setState({user: response, isAuthenticated: true})
-
-    // this.setState({artists: response.artists, isAuthenticated: true})
-  }
-
-  onListArtistsReceived = response => {
-    this.setState({artists: response.artists})
+    this.props.userUpdated(user)
   }
 
   render() {
-    const { artists } = this.state;
-    
+    const artists = this.props.artists;
+
     return (
       <div className={'wrapper'}>
          <ActionCable
@@ -78,27 +68,22 @@ class App extends Component {
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto"></Nav>
             <Nav>
-              { !this.state.isAuthenticated &&
-                <OAuthAuthenticator
-                  onAuthSuccess={this.onAuthSuccess}
-                  onListArtistsReceived={this.onListArtistsReceived}
-                  />
+              { !this.props.isAuthenticated &&
+                <OAuthAuthenticator />
               }
 
-
-
-              { !this.state.isAuthenticated &&
+              { !this.props.isAuthenticated &&
                 <Nav.Link
                   onClick={this.startAuth}>Login with Spotify</Nav.Link>
               }
 
-              { this.state.isAuthenticated &&
-                  <Navbar.Brand>Olá, {this.state.user.email}</Navbar.Brand>
+              { this.props.isAuthenticated &&
+                  <Navbar.Brand>Olá, {this.props.user.email}</Navbar.Brand>
               }
 
-              { this.state.isAuthenticated &&
+              { this.props.isAuthenticated &&
                   <Nav.Link
-                    onClick={this.startLogout}>Logout</Nav.Link>
+                    onClick={this.props.logout}>Logout</Nav.Link>
               }
             </Nav>
           </Navbar.Collapse>
@@ -106,7 +91,6 @@ class App extends Component {
 
 
         <Container>
-
             { artists.length > 0 &&
               <ListArtists artists={artists} />
             }
@@ -116,4 +100,9 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = (state) => (state.oauth)
+
+const mapDispatchToProps =
+  (dispatch) => bindActionCreators({userUpdated, logout}, dispatch)
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

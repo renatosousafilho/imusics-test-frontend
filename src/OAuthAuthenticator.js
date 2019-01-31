@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+
 import { get } from './network'
 import { OauthSender, OauthReceiver } from 'react-oauth-flow';
 import { Nav } from 'react-bootstrap';
+
+import { userUpdated, artistsUpdated } from './oauthActions';
 
 class OAuthAuthenticator extends Component {
   constructor(props) {
@@ -13,13 +18,13 @@ class OAuthAuthenticator extends Component {
 
     get("/api/v1/me", opts).then(
       (response) => {
-        this.props.onAuthSuccess(response)
+        this.props.userUpdated(response)
       }
     )
 
     get("/api/v1/following", opts).then(
       (response) => {
-        this.props.onListArtistsReceived(response)
+        this.props.artistsUpdated(response)
       }
     )
   };
@@ -52,4 +57,12 @@ class OAuthAuthenticator extends Component {
   }
 }
 
-export default OAuthAuthenticator;
+
+const mapStateToProps = (state) => {
+  return state.oauth
+}
+
+const mapDispatchToProps =
+  (dispatch) => bindActionCreators({userUpdated, artistsUpdated}, dispatch)
+
+export default connect(mapStateToProps, mapDispatchToProps)(OAuthAuthenticator);
