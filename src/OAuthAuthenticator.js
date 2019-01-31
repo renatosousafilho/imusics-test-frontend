@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { get } from './network'
 import { OauthSender, OauthReceiver } from 'react-oauth-flow';
+import { Nav } from 'react-bootstrap';
 
 class OAuthAuthenticator extends Component {
   constructor(props) {
@@ -8,13 +9,17 @@ class OAuthAuthenticator extends Component {
   }
 
   handleSuccess = async (accessToken, { response, state }) => {
-    console.log('Successfully authorized');
     let opts = { headers: {"Authorization": `Bearer ${accessToken}`}}
+
+    get("/api/v1/me", opts).then(
+      (response) => {
+        this.props.onAuthSuccess(response)
+      }
+    )
+
     get("/api/v1/following", opts).then(
       (response) => {
-        console.log(response.artists.length)
-        this.props.onAuthSuccess(response)
-        this.setState({artists: response.artists, isAuthenticated: true})
+        this.props.onListArtistsReceived(response)
       }
     )
   };
@@ -31,7 +36,7 @@ class OAuthAuthenticator extends Component {
           authorizeUrl="http://localhost:5000/oauth/authorize"
           clientId="817ffd5bf665a8e7b3b849cb8c8993f0f97899ee234daecf0358255e2e647b76"
           redirectUri="http://localhost:3000/auth/doorkeeper/callback"
-          render={({ url }) => <a className="btn btn-primary" href={url}>Login with Dookeper!!!!</a>}
+          render={({ url }) => <Nav.Link href={url}>Login</Nav.Link>}
         />
 
         <OauthReceiver

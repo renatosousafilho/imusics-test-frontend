@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 
 import { ActionCable } from 'react-actioncable-provider';
+import LoadingSpinner from './LoadingSpinner'
 import OAuthAuthenticator from './OAuthAuthenticator';
 import UserPanel from './UserPanel';
 import ListArtists from './ListArtists';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+import { Navbar, Nav, NavDropdown, Container, Row } from 'react-bootstrap';
 
 
 class App extends Component {
@@ -51,32 +54,63 @@ class App extends Component {
   }
 
   onAuthSuccess = response => {
-    this.setState({artists: response.artists, isAuthenticated: true})
+    this.setState({user: response, isAuthenticated: true})
+
+    // this.setState({artists: response.artists, isAuthenticated: true})
+  }
+
+  onListArtistsReceived = response => {
+    this.setState({artists: response.artists})
   }
 
   render() {
+    const { artists } = this.state;
+    
     return (
       <div className={'wrapper'}>
-       <div className={'container'}>
          <ActionCable
             channel={{ channel: 'MessagesChannel' }}
-            onReceived={this.handleReceived}
-          />
+            onReceived={this.handleReceived} />
 
-          <button
-            className={this.state.isAuthenticated ? 'hidden' : 'btn btn-success'}
-            onClick={this.startAuth}>Login with Spotify</button>
+         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+          <Navbar.Brand href="#home">Spotify Client</Navbar.Brand>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="mr-auto"></Nav>
+            <Nav>
+              { !this.state.isAuthenticated &&
+                <OAuthAuthenticator
+                  onAuthSuccess={this.onAuthSuccess}
+                  onListArtistsReceived={this.onListArtistsReceived}
+                  />
+              }
 
-          <OAuthAuthenticator onAuthSuccess={this.onAuthSuccess}/>
 
-          <button
-              className={!this.state.isAuthenticated ? 'hidden' : 'btn btn-danger'}
-              onClick={this.startLogout}>Logout</button>
 
-          <div>
-            { this.state.artists.length > 0 ? <ListArtists artists={this.state.artists} /> : null }
-          </div>
-       </div>
+              { !this.state.isAuthenticated &&
+                <Nav.Link
+                  onClick={this.startAuth}>Login with Spotify</Nav.Link>
+              }
+
+              { this.state.isAuthenticated &&
+                  <Navbar.Brand>Olá, {this.state.user.email}</Navbar.Brand>
+              }
+
+              { this.state.isAuthenticated &&
+                  <Nav.Link
+                    onClick={this.startLogout}>Logout</Nav.Link>
+              }
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
+
+
+        <Container>
+
+            { artists.length > 0 &&
+              <ListArtists artists={artists} />
+            }
+        </Container>
      </div>
     );
   }
