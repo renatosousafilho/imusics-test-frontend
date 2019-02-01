@@ -7,6 +7,7 @@ import { userUpdated, logout } from './oauthActions';
 import LoadingSpinner from './LoadingSpinner'
 import OAuthAuthenticator from './OAuthAuthenticator';
 import ListArtists from './ListArtists';
+import WelcomeContainer from './WelcomeContainer';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -48,12 +49,12 @@ class App extends Component {
           </Navbar.Collapse>
         </Navbar>
 
+        {!this.props.isAuthenticated ? <WelcomeContainer /> : 
+          <Container style={{marginTop: 30 }}>
+            { this.props.loading ? "Carregando..." : <ListArtists artists={artists} /> }
+          </Container>
+        }
 
-        <Container style={{marginTop:30 }}>
-          { artists.length > 0 &&
-            <ListArtists artists={artists} />
-          }
-        </Container>
      </div>
     );
   }
@@ -63,7 +64,9 @@ const mapStateToProps = (state) => {
   return {
     user: state.user.data,
     isAuthenticated: state.user.isAuthenticated,
-    artists: state.artists.data }
+    artists: state.artists.data,
+    loading: state.artists.loading
+  }
 }
 
 const mapDispatchToProps =
