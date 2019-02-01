@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import { APP_ID, SECRET_KEY, REDIRECT_URI, TOKEN_URL, AUTHORIZE_URL } from './constants'
 import { get } from './network'
 import { OauthSender, OauthReceiver } from 'react-oauth-flow';
 import { Nav } from 'react-bootstrap';
@@ -24,6 +25,7 @@ class OAuthAuthenticator extends Component {
 
     get("/api/v1/following", opts).then(
       (response) => {
+        console.log(response)
         this.props.artistsUpdated(response)
       }
     )
@@ -38,17 +40,17 @@ class OAuthAuthenticator extends Component {
     return (
       <div>
         <OauthSender
-          authorizeUrl="http://localhost:5000/oauth/authorize"
-          clientId="817ffd5bf665a8e7b3b849cb8c8993f0f97899ee234daecf0358255e2e647b76"
-          redirectUri="http://localhost:3000/auth/doorkeeper/callback"
+          authorizeUrl={AUTHORIZE_URL}
+          clientId={APP_ID}
+          redirectUri={REDIRECT_URI}
           render={({ url }) => <Nav.Link href={url}>Login</Nav.Link>}
         />
 
         <OauthReceiver
-          tokenUrl="http://localhost:5000/oauth/token"
-          clientId="817ffd5bf665a8e7b3b849cb8c8993f0f97899ee234daecf0358255e2e647b76"
-          clientSecret="a4b724042d2b064dada6aef357541ce32b47acc30af70dd7a1cea0971c657eb4"
-          redirectUri="http://localhost:3000/auth/doorkeeper/callback"
+          tokenUrl={TOKEN_URL}
+          clientId={APP_ID}
+          clientSecret={SECRET_KEY}
+          redirectUri={REDIRECT_URI}
           onAuthSuccess={this.handleSuccess}
           onAuthError={this.handleError}
         />

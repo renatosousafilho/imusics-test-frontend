@@ -7,7 +7,6 @@ import { userUpdated, logout } from './oauthActions';
 import { ActionCable } from 'react-actioncable-provider';
 import LoadingSpinner from './LoadingSpinner'
 import OAuthAuthenticator from './OAuthAuthenticator';
-import UserPanel from './UserPanel';
 import ListArtists from './ListArtists';
 
 import './App.css';
@@ -48,7 +47,7 @@ class App extends Component {
   }
 
   handleReceived(data) {
-    this.popup.close()
+    // this.popup.close()
     let user = JSON.parse(data.user)
     this.props.userUpdated(user)
   }
