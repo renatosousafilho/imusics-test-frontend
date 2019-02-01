@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { APP_ID, SECRET_KEY, REDIRECT_URI, TOKEN_URL, AUTHORIZE_URL } from './constants'
-import { get } from './network'
+import { get } from './api'
 import { OauthSender, OauthReceiver } from 'react-oauth-flow';
 import { Nav } from 'react-bootstrap';
 
@@ -15,19 +15,15 @@ class OAuthAuthenticator extends Component {
   }
 
   handleSuccess = async (accessToken, { response, state }) => {
-    let opts = { headers: {"Authorization": `Bearer ${accessToken}`}}
+    const opts = { headers: {"Authorization": `Bearer ${accessToken}`}}
 
-    get("/api/v1/me", opts).then(
-      (response) => {
-        this.props.userUpdated(response)
-      }
-    )
+    const [profile, artists] = await Promise.all([
+      get("/api/v1/me", opts),
+      get("/api/v1/following", opts)
+    ])
 
-    get("/api/v1/following", opts).then(
-      (response) => {
-        this.props.artistsUpdated(response)
-      }
-    )
+    this.props.userUpdated(profile)
+    this.props.artistsUpdated(artists)
   };
 
   handleError = error => {

@@ -1,4 +1,5 @@
-export const ENDPOINT = "http://localhost:5000";
+import { API_ROOT } from './constants'
+
 
 export const get = (path, opts = {}) => {
   return makeRequest(path, opts)
@@ -33,13 +34,13 @@ export const destroy = (path, opts) => {
 }
 
 export const makeRequest = (path, opts) => {
-  let url = `${ENDPOINT}${path}`
+  let url = `${API_ROOT}${path}`
   let method = opts.method || "GET"
 
   opts.headers = opts.headers || {}
   opts.headers["Accept"] = "application/json"
   opts.headers["Access-Control-Allow-Origin"] = "http://localhost:3000"
-  
+
   // if (token) { opts.headers["Authorization"] = `Bearer ${token}` }
 
   return new Promise(function (resolve, reject) {

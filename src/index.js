@@ -5,7 +5,6 @@ import { Provider } from 'react-redux'
 
 import oauthReducer from './oauthReducer'
 
-import { ActionCableProvider } from 'react-actioncable-provider';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
@@ -17,9 +16,7 @@ const reducers = combineReducers({
 
 ReactDOM.render(
   <Provider store={createStore(reducers)}>
-    <ActionCableProvider url={API_WS_ROOT}>
-      <App />
-    </ActionCableProvider>
+    <App />
   </Provider>,
   document.getElementById('root'));
 serviceWorker.unregister();
