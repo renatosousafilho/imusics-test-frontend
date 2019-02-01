@@ -5,8 +5,8 @@ export const TOKEN_URL="http://localhost:5000/oauth/token";
 
 export const REDIRECT_URI = "http://localhost:3000/auth/doorkeeper/callback";
 
-export const APP_ID = '8f1f118fb7696b5b3d0a6a74dd35ba9df40ec7c76bc70b1ce8d1c65d9645ad0a';
-export const SECRET_KEY = 'b03b527e89a8629b10d7a8123582b4c747ec3939d77c52eaeaec7a637eac15d0'
+export const APP_ID = '776a73e7eb16d6183cab89cefc7234ede463cea80f28a1df44155304dbaa83b5';
+export const SECRET_KEY = 'e96439ca4acfe043c84ebaffde156ecdffe3fd22cc7c58b554cee2ee1bc8e0e6'
 
 export const HEADERS = {
   'Content-Type': 'application/json',

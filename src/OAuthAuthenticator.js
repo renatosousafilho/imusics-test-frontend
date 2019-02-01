@@ -25,7 +25,6 @@ class OAuthAuthenticator extends Component {
 
     get("/api/v1/following", opts).then(
       (response) => {
-        console.log(response)
         this.props.artistsUpdated(response)
       }
     )
