@@ -1,9 +1,9 @@
 export function userUpdated(data)  {
-  return { type: 'UPDATE_USERS', payload: data }
+  return { type: 'LOGIN', payload: data }
 }
 
 export function artistsUpdated(data)  {
-  return { type: 'UPDATE_ARTISTS', payload: data.artists }
+  return { type: 'LOAD_ARTISTS', payload: data.artists }
 }
 
 export function logout()  {

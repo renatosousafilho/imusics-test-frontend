@@ -15,18 +15,13 @@ import { Navbar, Nav, NavDropdown, Container, Row } from 'react-bootstrap';
 
 
 class App extends Component {
-  state = {
-    user: {},
-    artists: [],
-    isAuthenticated: false
-  }
-
   constructor() {
     super();
   }
 
 
   render() {
+    const user = this.props.user;
     const artists = this.props.artists;
 
     return (
@@ -42,7 +37,7 @@ class App extends Component {
               }
 
               { this.props.isAuthenticated &&
-                  <Navbar.Brand>Olá, {this.props.user.email}</Navbar.Brand>
+                  <Navbar.Brand>Olá, {user.email}</Navbar.Brand>
               }
 
               { this.props.isAuthenticated &&
@@ -55,16 +50,21 @@ class App extends Component {
 
 
         <Container>
-            { artists.length > 0 &&
-              <ListArtists artists={artists} />
-            }
+          { artists.length > 0 &&
+            <ListArtists artists={artists} />
+          }
         </Container>
      </div>
     );
   }
 }
 
-const mapStateToProps = (state) => (state.oauth)
+const mapStateToProps = (state) => {
+  return {
+    user: state.user.data,
+    isAuthenticated: state.user.isAuthenticated,
+    artists: state.artists.data }
+}
 
 const mapDispatchToProps =
   (dispatch) => bindActionCreators({userUpdated, logout}, dispatch)
