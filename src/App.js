@@ -49,7 +49,7 @@ class App extends Component {
         </Navbar>
 
 
-        <Container>
+        <Container style={{marginTop:30 }}>
           { artists.length > 0 &&
             <ListArtists artists={artists} />
           }
